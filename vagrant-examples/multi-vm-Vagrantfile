@@ -1,0 +1,57 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+# Vagrant Multi-Machine using libvirt
+#
+Vagrant.configure("2") do |config|
+  config.vm.define "servera" do |servera|
+    servera.vm.box = "rhel76"
+    config.vm.hostname = "servera"
+    #error#config.vm.box_version = "1.8.28"
+    servera.vm.network :private_network,
+      :ip => "10.10.20.30",
+      :libvirt__domain_name => "heartbeat.local"
+    servera.vm.provider :libvirt do |domain|
+      domain.memory = 2048
+      domain.cpus = 1
+      domain.storage :file, :size => '5G', :type => 'qcow2'
+      # Set a different storage pool
+      domain.storage_pool_name = 'usb_ssd'
+    end
+  end
+  config.vm.define "serverb" do |serverb|
+    serverb.vm.box = "rhel76"
+    config.vm.hostname = "serverb"
+    serverb.vm.network :private_network,
+      :ip => "10.10.20.31",
+      :libvirt__domain_name => "heartbeat.local"
+    serverb.vm.provider :libvirt do |domain|
+      domain.memory = 2048
+      domain.cpus = 1
+      # Set a different storage pool
+      domain.storage_pool_name = 'usb_ssd'
+    end
+  end
+  config.vm.define "serverc" do |serverc|
+    serverc.vm.box = "rhel76"
+    config.vm.hostname = "serverc"
+    serverc.vm.network :private_network,
+      :ip => "10.10.20.32",
+      :libvirt__domain_name => "heartbeat.local"
+    serverc.vm.provider :libvirt do |domain|
+      domain.memory = 2048
+      domain.cpus = 1
+      # Set a different storage pool
+      domain.storage_pool_name = 'usb_ssd'
+    end
+  end
+  config.vm.define "workstation" do |workstation|
+    workstation.vm.box = "rhel76"
+    config.vm.hostname = "workstation"
+    workstation.vm.provider :libvirt do |domain|
+      domain.memory = 1024
+      domain.cpus = 1
+      # Set a different storage pool
+      domain.storage_pool_name = 'usb_ssd'
+    end
+  end
+end
